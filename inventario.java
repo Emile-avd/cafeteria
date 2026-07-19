@@ -16,24 +16,36 @@ public class inventario {
         return nombre;
     }
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getStock() {
         return stock;
     }
 
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
     public double getPrecio() {
         return precio;
     }
 
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
     public void mostrarInventario() {
-        System.out.println("***** Inventario: *****");
-        System.out.println("Nombre: " + nombre);
-        System.out.println("ID: " + id);
-        System.out.println("Stock: " + stock);
-        System.out.println("Precio: " + precio);
+        
     }
 
     public void agregarProducto(String nombre, int id, int stock, double precio) {

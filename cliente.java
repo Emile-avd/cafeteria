@@ -10,6 +10,7 @@ public class cliente {
         this.id = id;
         this.direccion = direccion;
     }
+    
 
     public String getNombre() {
         return nombre;
@@ -19,12 +20,24 @@ public class cliente {
         return telefono;
     }
 
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
+    }
+
     public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getDireccion() {
         return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     
