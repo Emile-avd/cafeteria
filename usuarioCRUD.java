@@ -144,37 +144,5 @@ public class usuarioCRUD {
         usuario usuario = new usuario(nuevoNombre, nuevoEmail, nuevoPass, nuevoRol, id);
         actualizarUsuario(usuario);
     }
-
-    public usuario autenticarUsuario(String email, String pass) {
-        String sql = "SELECT * FROM usuario WHERE email = ? AND passw = ?";
-
-        try (Connection conn = conexionDb.getConexion()) {
-            if (conn == null) {
-                System.out.println("No se pudo establecer la conexión a la base de datos.");
-                return null;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, email);
-                stmt.setString(2, pass);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return new usuario(
-                                rs.getString("nombre_usuario"),
-                                rs.getString("email"),
-                                rs.getString("passw"),
-                                rs.getString("rol"),
-                                rs.getInt("id_usuario")
-                        );
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error al autenticar: " + e.getMessage());
-        }
-
-        return null;
-    }
 }
 
