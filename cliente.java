@@ -1,3 +1,5 @@
+package vista;
+
 public class cliente {
     private int id;
     private String nombre;

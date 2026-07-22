@@ -1,3 +1,5 @@
+package vista;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -105,6 +107,38 @@ public class usuarioCRUD {
             }
         } catch (Exception e) {
             System.out.println("Error al buscar usuario: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public usuario obtenerUsuarioPorNombreYPass(String nombre, String passw) {
+        String sql = "SELECT * FROM usuario WHERE nombre_usuario = ? AND passw = ?";
+
+        try (Connection conn = conexionDb.getConexion()) {
+            if (conn == null) {
+                System.out.println("No se pudo establecer la conexión a la base de datos.");
+                return null;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, nombre);
+                stmt.setString(2, passw);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new usuario(
+                                rs.getString("nombre_usuario"),
+                                rs.getString("email"),
+                                rs.getString("passw"),
+                                rs.getString("rol"),
+                                rs.getInt("id_usuario")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al autenticar usuario: " + e.getMessage());
         }
 
         return null;

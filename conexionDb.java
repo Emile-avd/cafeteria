@@ -1,3 +1,5 @@
+package vista;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,10 +23,11 @@ public class conexionDb {
             System.out.println("Conexion exitosa");
 
         } catch (ClassNotFoundException e) {
-            System.out.println("No se encontro el drive MYSQL. agregar el archivo .jar del conector a lib");
+            System.out.println("No se encontro el driver MySQL. Agrega el .jar del conector a lib.");
             e.printStackTrace();
         } catch (SQLException e){
-            System.out.println("Error en la conexion"+e.getMessage());
+            System.out.println("Error en la conexion: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return conexion;

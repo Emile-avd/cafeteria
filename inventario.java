@@ -1,3 +1,5 @@
+package vista;
+
 import java.util.*;
 public class inventario {
     private String nombre;

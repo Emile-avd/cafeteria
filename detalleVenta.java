@@ -1,3 +1,5 @@
+package vista;
+
 public class detalleVenta {
 	private int id_detalle;
 	private int id_venta;

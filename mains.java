@@ -1,3 +1,6 @@
+package vista;
+
+import java.util.List;
 import java.util.Scanner;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,32 +24,22 @@ public class mains {
                 System.out.println("Ingresa tu contraseña: ");
                 String passw = scanner.nextLine();
                 
-                boolean loginValido = false;
-                if (!nombre.equals("") && !passw.equals("")) {
-                    try {
-                        PreparedStatement stmt = conexion.prepareStatement("SELECT * FROM usuario WHERE nombre_usuario = ? AND passw = ?");
-                        stmt.setString(1, nombre);
-                        stmt.setString(2, passw);
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next()) {
-                            System.out.println("Login exitoso. Bienvenido " + nombre);
-                            loginValido = true;
-                            mostrarMenuAdministrador();
-                        } else {
-                            System.out.println("Usuario o contraseña incorrectos");
-                        }
-                        rs.close();
-                        stmt.close();
-                    } catch (Exception e) {
-                        System.out.println("Error al iniciar sesion: " + e.getMessage());
+                usuario usuario = validarCredenciales(nombre, passw);
+                if (usuario != null) {
+                    System.out.println("Login exitoso. Bienvenido " + nombre);
+                    String rol = usuario.getRol() != null ? usuario.getRol().trim().toLowerCase() : "";
+                    if ("administrador".equals(rol)) {
+                        mostrarMenuAdministrador();
+                    } else if ("cajero".equals(rol)) {
+                        mostrarMenuCajero();
+                    } else {
+                        System.out.println("Rol no reconocido: " + usuario.getRol());
                     }
-                }
-                
-                if (!loginValido) {
+                } else {
+                    System.out.println("Usuario o contraseña incorrectos");
                     System.out.println("No puedes acceder al sistema sin login valido");
-                    conexion.close();
-                    return;
                 }
+
                 conexion.close();
             } else {
                 System.out.println("No se pudo realizar la conexion");
@@ -55,6 +48,15 @@ public class mains {
         } catch (Exception e) {
             System.out.println("Error al verificar la conexion" + e.getMessage());
         }
+    }
+
+    public static usuario validarCredenciales(String nombre, String passw) {
+        if (nombre == null || nombre.trim().isEmpty() || passw == null || passw.isEmpty()) {
+            return null;
+        }
+
+        usuarioCRUD usuarioCRUD = new usuarioCRUD();
+        return usuarioCRUD.obtenerUsuarioPorNombreYPass(nombre.trim(), passw);
     }
 
     private static void mostrarMenuAdministrador() {
@@ -89,19 +91,31 @@ public class mains {
     }
 
     private static void mostrarMenuCajero() {
-        System.out.println("Elige una opcion:");
-        System.out.println("1. Gestion de productos");
-        System.out.println("2. Salir");
-        int opcion = scanner.nextInt();
-        scanner.nextLine();
+        int opcion;
+        do {
+            System.out.println("Elige una opcion:");
+            System.out.println("1. Hacer venta");
+            System.out.println("2. Consultar productos");
+            System.out.println("3. Salir");
+            opcion = scanner.nextInt();
+            scanner.nextLine();
 
-        if (opcion == 1) {
-            gestionUsuarios();
-        } else if (opcion == 2) {
-            gestionProductos();
-        } else {
-            System.out.println("Opcion invalida");
-        }
+            switch (opcion) {
+                case 1:
+                    hacerVenta();
+                    break;
+                case 2:
+                    productosCRUD prodCrud = new productosCRUD();
+                    prodCrud.listarProductos();
+                    break;
+                case 3:
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opcion invalida");
+                    break;
+            }
+        } while (opcion != 3);
     }
 
     private static String pedirRolUsuario() {
@@ -251,8 +265,9 @@ public class mains {
         do {
             System.out.println("Elige una opcion de ventas:");
             System.out.println("1. Hacer venta");
-            System.out.println("2. Ver historial de ventas");
-            System.out.println("3. Salir");
+            System.out.println("2. Ver ventas en proceso");
+            System.out.println("3. Ver historial de ventas");
+            System.out.println("4. Salir");
             opcionVenta = scanner.nextInt();
             scanner.nextLine();
 
@@ -261,16 +276,31 @@ public class mains {
                     hacerVenta();
                     break;
                 case 2:
-                    historialVentas.mostrarHistorial();
+                    mostrarVentasEnProceso();
                     break;
                 case 3:
+                    historialVentas.mostrarHistorial();
+                    break;
+                case 4:
                     System.out.println("Regresando al menu anterior");
                     break;
                 default:
                     System.out.println("Opcion invalida");
                     break;
             }
-        } while (opcionVenta != 3);
+        } while (opcionVenta != 4);
+    }
+
+    private static void mostrarVentasEnProceso() {
+        List<venta> ventasEnProceso = ventasManager.getEnProceso();
+        if (ventasEnProceso.isEmpty()) {
+            System.out.println("No hay ventas en proceso");
+        } else {
+            System.out.println("Ventas en proceso:");
+            for (venta v : ventasEnProceso) {
+                System.out.println("ID: " + v.getId_venta() + ", Total: " + v.getVen_total() + ", Cantidad de productos: " + v.getVen_cantidad_productos());
+            }
+        }
     }
 
     private static void hacerVenta() {
